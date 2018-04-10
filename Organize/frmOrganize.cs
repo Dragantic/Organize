@@ -38,7 +38,7 @@ namespace Organize {
 	class Bitch {
 		DirectoryInfo face;
 		List<FileInfo> goods;
-		List<Bitch> kids;
+		List<Bitch> kids = new List<Bitch>();
 		Bitch parent;
 		int goal=0;
 
@@ -61,7 +61,6 @@ namespace Organize {
 				Regex.Replace(x.Name.Replace(",", "").Replace("-", " - "),
 					@"\d+", d => d.Value.PadLeft(8, '0'))).ToList();
 
-			kids = new List<Bitch>();
 			foreach (var kid in belly) kids.Add(new Bitch(kid, this));
 
 			goods = cute.GetFiles().Where(x => ext.Contains(x.Extension.ToLower()))
@@ -93,13 +92,13 @@ namespace Organize {
 
 		public void stacked() {
 			for (int grown=0; grown<kids.Count; grown++)
-			{	var full = kids[grown];
-				var bloat = full.goods.Count;
-				var chub = full.face.FullName + @"\";
-				var limit = full.goal;
+			{	Bitch full = kids[grown];
 				full.stacked();
+				string chub = full.face.FullName + @"\";
+				int bloat = full.goods.Count;
+				int limit = full.goal;
 				Program.form.nameChange(full.face.Name);
-				if (bloat > 0)
+				if (bloat>0 && bloat!=limit)
 				{	Bitch blimped;
 					if (grown+1 < kids.Count) { blimped = kids[grown+1]; }
 					else if (parent != null)
@@ -110,6 +109,7 @@ namespace Organize {
 					var puff = blimped.face.FullName + @"\";
 					if (bloat < limit)
 					{	int diff = limit - bloat;
+						if (diff > huge) diff = huge;
 						var biggins = blimped.goods.GetRange(huge-diff, diff);
 						try
 						{	foreach (var blimp in biggins)
@@ -123,6 +123,8 @@ namespace Organize {
 						{	foreach (var blimp in biggins)
 								File.Move(chub+blimp, puff+blimp);   } catch {}
 						blimped.goods.AddRange(biggins);
+						blimped.goods.Sort((a, b) =>
+							DateTime.Compare(b.LastWriteTime, a.LastWriteTime));
 						Thread.Sleep(1001);   }   }   }
 		}
 	}
