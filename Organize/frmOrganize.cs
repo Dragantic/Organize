@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Organize.Properties;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,12 +13,26 @@ namespace Organize {
 			InitializeComponent();
 		}
 
+		private void frmOrganize_Load(object sender, EventArgs e) {
+			Location = Settings.Default.Location;
+		}
+
+		private void frmOrganize_FormClosing(object sender, FormClosingEventArgs e) {
+			Settings.Default.Location = Location;
+			Settings.Default.Save();
+		}
+
+		public void nameChange(string name) {
+			lblFolder.Text = name;
+		}
+
 		private void frmOrganize_Shown(object sender, EventArgs e) {
 			nameChange(AppDomain.CurrentDomain.BaseDirectory);
 		}
 
 		private void btnModDate_Click(object sender, EventArgs e) {
 			btnModDate.Enabled = btnOrganize.Enabled = false;
+			Bitch.burst();
 			Bitch bitch = new Bitch(new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory));
 			bitch.pretty();
 			btnModDate.Enabled = btnOrganize.Enabled = true;
@@ -25,13 +40,10 @@ namespace Organize {
 
 		private void btnOrganize_Click(object sender, EventArgs e) {
 			btnModDate.Enabled = btnOrganize.Enabled = false;
+			Bitch.burst();
 			Bitch bitch = new Bitch(new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory));
-			bitch.stacked();
+			bitch.bloated();
 			btnModDate.Enabled = btnOrganize.Enabled = true;
-		}
-
-		public void nameChange(string name) {
-			lblFolder.Text = name;
 		}
 	}
 
@@ -40,7 +52,9 @@ namespace Organize {
 		List<FileInfo> goods;
 		List<Bitch> kids = new List<Bitch>();
 		Bitch parent;
-		int goal=0;
+		int goal=0, from=0, to=0;
+		static List<FileInfo> _fam = new List<FileInfo>();
+		public List<FileInfo> fam { get { return _fam; } }
 
 		static List<string> ext = new List<string>
 			{".bmp", ".gif", ".jpg", ".jpeg", ".png", ".swf",
@@ -55,6 +69,10 @@ namespace Organize {
 			init(cute);
 		}
 
+		public static void burst() {
+			_fam = new List<FileInfo>();
+		}
+
 		void init(DirectoryInfo cute) {
 			face = cute;
 			var belly = cute.GetDirectories().OrderBy(x =>
@@ -64,14 +82,15 @@ namespace Organize {
 			foreach (var kid in belly) kids.Add(new Bitch(kid, this));
 
 			goods = cute.GetFiles().Where(x => ext.Contains(x.Extension.ToLower()))
-				.OrderByDescending(x => x.LastWriteTime).ToList();
+				.OrderBy(x => x.LastWriteTime).ToList();
+			if (goods.Count > 0) _fam.AddRange(goods);
 			if (parent!=null && goods.Count>0)
 			{	MatchCollection nums = Regex.Matches
 					(face.Name.Replace(",", "").Replace("-", " - "), @"\d+");
 				if (nums.Count > 1)
-				{	int from = Int32.Parse(nums[0].ToString());
-					int to = Int32.Parse(nums[1].ToString());
-					goal = to - (from-1);   }   }
+				{	from = Int32.Parse(nums[0].ToString()) - 1;
+					to = Int32.Parse(nums[1].ToString());
+					goal = to - from;   }   }
 			Program.form.nameChange(cute.FullName);
 		}
 
@@ -90,42 +109,38 @@ namespace Organize {
 					Thread.Sleep(1001);   }   }
 		}
 
-		public void stacked() {
+		public void bloated() {
+			_fam.Sort((a, b) => DateTime.Compare(a.LastWriteTime, b.LastWriteTime));
+			bloating();
+			int last = kids.Last().to;
+			var kin = _fam.GetRange(last, _fam.Count-last);
+			var gut = kin.Except(goods, new FileInfoEqualityComparer()).ToList();
+			try
+			{	foreach (var swell in gut)
+				{	string round = face.FullName + swell.Name;
+					File.Move(swell.FullName, round);   }   } catch {}
+		}
+
+		void bloating() {
 			for (int grown=0; grown<kids.Count; grown++)
 			{	Bitch full = kids[grown];
-				full.stacked();
-				string chub = full.face.FullName + @"\";
-				int bloat = full.goods.Count;
-				int limit = full.goal;
-				Program.form.nameChange(full.face.Name);
-				if (bloat>0 && bloat!=limit)
-				{	Bitch blimped;
-					if (grown+1 < kids.Count) { blimped = kids[grown+1]; }
-					else if (parent != null)
-					{	int p = parent.kids.IndexOf(this);
-						blimped = parent.kids[p+1];   }
-					else blimped = this;
-					var huge = blimped.goods.Count;
-					var puff = blimped.face.FullName + @"\";
-					if (bloat < limit)
-					{	int diff = limit - bloat;
-						if (diff > huge) diff = huge;
-						var biggins = blimped.goods.GetRange(huge-diff, diff);
-						try
-						{	foreach (var blimp in biggins)
-								File.Move(puff+blimp, chub+blimp);   } catch {}
-						blimped.goods.RemoveRange(huge-diff, diff);
-						Thread.Sleep(1001);   }
-					else if (bloat > limit)
-					{	int diff = bloat - limit;
-						var biggins = full.goods.GetRange(0, diff);
-						try
-						{	foreach (var blimp in biggins)
-								File.Move(chub+blimp, puff+blimp);   } catch {}
-						blimped.goods.AddRange(biggins);
-						blimped.goods.Sort((a, b) =>
-							DateTime.Compare(b.LastWriteTime, a.LastWriteTime));
-						Thread.Sleep(1001);   }   }   }
+				full.bloating();
+				var kin = _fam.GetRange(full.from, full.goal);
+				var gut = kin.Except(full.goods, new FileInfoEqualityComparer()).ToList();
+				try
+				{	foreach (var swell in gut)
+					{	string round = full.face.FullName + @"\" + swell.Name;
+						File.Move(swell.FullName, round);   }   } catch {}   }
+		}
+	}
+
+	public class FileInfoEqualityComparer : IEqualityComparer<FileInfo> {
+		public bool Equals(FileInfo x, FileInfo y) {
+			return x.FullName == y.FullName;
+		}
+
+		public int GetHashCode(FileInfo obj) {
+			return obj.FullName.GetHashCode();
 		}
 	}
 }

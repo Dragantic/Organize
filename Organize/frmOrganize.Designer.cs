@@ -66,6 +66,8 @@
 			this.Controls.Add(this.btnModDate);
 			this.Name = "frmOrganize";
 			this.Text = "Organize";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmOrganize_FormClosing);
+			this.Load += new System.EventHandler(this.frmOrganize_Load);
 			this.Shown += new System.EventHandler(this.frmOrganize_Shown);
 			this.ResumeLayout(false);
 			this.PerformLayout();
