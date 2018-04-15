@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bitch.cs" />
     <Compile Include="frmOrganize.cs">
       <SubType>Form</SubType>
     </Compile>
