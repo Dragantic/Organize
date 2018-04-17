@@ -30,7 +30,7 @@ namespace Organize {
 			btnModDate.Enabled = btnOrganize.Enabled = false;
 			Bitch.Burst();
 			Bitch bitch = new Bitch(new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory));
-			bitch.pretty();
+			bitch.huge();
 			btnModDate.Enabled = btnOrganize.Enabled = true;
 		}
 
@@ -39,6 +39,9 @@ namespace Organize {
 			Bitch.Burst();
 			Bitch bitch = new Bitch(new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory));
 			bitch.bloated();
+			Bitch.Burst();
+			bitch = new Bitch(new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory));
+			bitch.huge();
 			btnModDate.Enabled = btnOrganize.Enabled = true;
 		}
 	}

@@ -12,7 +12,7 @@ namespace Organize {
 		List<Bitch> kids = new List<Bitch>();
 		Bitch parent;
 		int goal=0, from=0, to=0;
-		static List<FileInfo> fam = new List<FileInfo>();
+		static List<FileInfo> fam;
 
 		static List<string> ext = new List<string>
 			{".bmp", ".gif", ".jpg", ".jpeg", ".png", ".swf",
@@ -52,12 +52,17 @@ namespace Organize {
 			Program.form.nameChange(cute.FullName);
 		}
 
-		public void pretty() {
-			foreach (Bitch full in kids)
-			{	var bloat = full.goods.Count;
-				full.pretty();
+		public void huge() {
+			var slags = kids.OrderByDescending(x => x.face.LastWriteTime.AddTicks
+				(-1 * (x.face.LastWriteTime.Ticks % TimeSpan.TicksPerSecond))).Reverse();
+			bool hard = false;
+			for (int i=0; i<kids.Count; i++)
+			{	Bitch full = kids[i];
+				full.huge();
 				Program.form.nameChange(full.face.Name);
-				if (bloat > 0)
+				if (!hard && slags.ElementAt(i) == kids[i]) continue;
+				else hard = true;
+				if (full.goods.Count > 0)
 				{	var pump = full.goods[0];
 					string swell = pump.Name.Insert(1, " ");
 					string gut = pump.Directory.FullName + @"\";
