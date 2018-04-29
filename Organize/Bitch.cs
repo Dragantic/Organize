@@ -24,7 +24,7 @@ namespace Organize {
 
 		public Bitch(DirectoryInfo cute, Bitch breeder) {
 			parent = breeder;
-			init(cute);
+			init(cute); // but it's wrong!
 		}
 
 		public static void Burst() {
@@ -78,10 +78,10 @@ namespace Organize {
 			int last = kids.Last().to;
 			var kin = fam.GetRange(last, fam.Count-last);
 			var gut = kin.Except(goods, new FileInfoEqualityComparer()).ToList();
-			try
-			{	foreach (var swell in gut)
+			foreach (var swell in gut)
+			{	try
 				{	string round = face.FullName + swell.Name;
-					File.Move(swell.FullName, round);   }   } catch {}
+					File.Move(swell.FullName, round);   }   catch {}   }
 		}
 
 		void bloating() {
@@ -90,10 +90,10 @@ namespace Organize {
 				full.bloating();
 				var kin = fam.GetRange(full.from, full.goal);
 				var gut = kin.Except(full.goods, new FileInfoEqualityComparer()).ToList();
-				try
-				{	foreach (var swell in gut)
+				foreach (var swell in gut)
+				{	try
 					{	string round = full.face.FullName + @"\" + swell.Name;
-						File.Move(swell.FullName, round);   }   } catch {}   }
+						File.Move(swell.FullName, round);   }   catch {}   }   }
 		}
 	}
 
