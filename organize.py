@@ -10,7 +10,7 @@ from gi.repository import Gtk
 loc = '.'
 if len(argv) > 1 and os.path.isdir(argv[1]):
 	loc = argv[1][:-1] if argv[1][-1] == '/' else argv[1]
-loc = os.path.abspath(loc)
+loc = os.path.abspath(os.path.expanduser(loc))
 
 class Dir:
 	def __init__(self, path, stop):
@@ -59,17 +59,22 @@ class OrganizeWindow(Gtk.Window):
 		files.sort(key=lambda x: x.date)
 		dirs.sort(key=lambda x: x.stop)
 		total = len(files)
-		for d in dirs:
-			if d.stop > total:
-				d.stop = total
 		dirs.append(Dir(loc, total))
 
-		i = 0
+		i, offset = 0, 0
 		for d in dirs:
-			while i < d.stop:
+			stop = min(d.stop + offset, total)
+			while i < stop:
 				f = files[i]
 				if f.path != d.path:
-					os.rename(f'{f.path}/{f.name}', f'{d.path}/{f.name}')
+					fr, to = f'{f.path}/{f.name}', f'{d.path}/{f.name}'
+					if os.path.isfile(to):
+						os.system(f'kioclient5 move "{fr}" trash:/')
+						if stop < total:
+							offset += 1
+							stop += 1
+					else:
+						os.rename(fr, to)
 				i += 1
 
 	def on_refresh_clicked(self, button):
