@@ -69,6 +69,7 @@ class OrganizeWindow(Gtk.Window):
 				if f.path != d.path:
 					fr, to = f'{f.path}/{f.name}', f'{d.path}/{f.name}'
 					if os.path.isfile(to):
+						print(f'\n{fr}\n{to}\nFile already exists. Moving to trash')
 						os.system(f'kioclient5 move "{fr}" trash:/')
 						if stop < total:
 							offset += 1
@@ -76,6 +77,7 @@ class OrganizeWindow(Gtk.Window):
 					else:
 						os.rename(fr, to)
 				i += 1
+		print('\ndone')
 
 	def on_refresh_clicked(self, button):
 		files: list[File] = []
